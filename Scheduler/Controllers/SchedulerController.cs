@@ -12,12 +12,14 @@ namespace Scheduler.Controllers
 {
     public class SchedulerController : Controller
     {
-        private TaskContext db = new TaskContext();
-
         [HttpGet]
         public ActionResult Index()
         {
-            return View(db.Tasks.ToList());
+            using (TaskContext db = new TaskContext())
+            {
+                return View(db.Tasks.ToList());
+            }
+
         }
 
         [HttpGet]
@@ -29,13 +31,15 @@ namespace Scheduler.Controllers
         [HttpPost]
         public ActionResult Create(Task task)
         {
-            if (ModelState.IsValid)
+            using (TaskContext db = new TaskContext())
             {
-                db.Tasks.Add(task);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    db.Tasks.Add(task);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
             }
-
             return View(task);
         }
 
@@ -47,30 +51,36 @@ namespace Scheduler.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Task task = db.Tasks.Find(id);
-
-            if (task == null)
+            using (TaskContext db = new TaskContext())
             {
-                return HttpNotFound();
+                Task task = db.Tasks.Find(id);
+
+                if (task == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(task);
             }
-            return View(task);
         }
 
         [HttpPost]
         public ActionResult Edit(Task task)
         {
-            if (ModelState.IsValid)
+            using (TaskContext db = new TaskContext())
             {
-                Task oldTask = db.Tasks.Find(task.TaskId);
+                if (ModelState.IsValid)
+                {
+                    Task oldTask = db.Tasks.Find(task.TaskId);
 
-                oldTask.Topic = task.Topic;
-                oldTask.Note = task.Note;
-                oldTask.Date = task.Date;
+                    oldTask.Topic = task.Topic;
+                    oldTask.Note = task.Note;
+                    oldTask.Date = task.Date;
 
-                //db.Entry(task).State = EntityState.Modified;
+                    //db.Entry(task).State = EntityState.Modified;
 
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
             }
             return View(task);
         }
@@ -83,24 +93,30 @@ namespace Scheduler.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Task task = db.Tasks.Find(id);
-
-            if (task == null)
+            using (TaskContext db = new TaskContext())
             {
-                return HttpNotFound();
-            }
+                Task task = db.Tasks.Find(id);
 
-            return View(task);
+                if (task == null)
+                {
+                    return HttpNotFound();
+                }
+
+                return View(task);
+            }
         }
 
         [HttpPost]
         public ActionResult Delete(int id)
         {
-            Task task = db.Tasks.Find(id);
+            using (TaskContext db = new TaskContext())
+            {
+                Task task = db.Tasks.Find(id);
 
-            db.Tasks.Remove(task);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+                db.Tasks.Remove(task);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
         }
 
     }
