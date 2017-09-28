@@ -1,0 +1,69 @@
+﻿@model IEnumerable<Scheduler.Models.Task>
+
+@{
+    var colorClass = "bg-dark";
+}
+
+<!DOCTYPE html>
+
+<html>
+    <body>
+
+        <h4>Ваши задачи: </h4>
+        <hr />
+
+        @foreach (var t in Model)
+        {
+            if (string.Compare(t.Date.ToString("d"), DateTime.Now.ToString("d")) < 0)
+            {
+                colorClass = "text-danger";
+            }
+            else if (string.Compare(t.Date.ToString("d"), DateTime.Now.ToString("d")) == 0)
+            {
+                colorClass = "text-success";
+            }
+            else
+            {
+                colorClass = "text-primary";
+            }
+            <div id="accordion" role="tablist">
+                <div class="card">
+                    <div class="card-header" role="tab" id="heading-@t.TaskId">
+                            <a class="@colorClass" data-toggle="collapse" href="#collapse-@t.TaskId" aria-expanded="true" aria-controls="collapse-@t.TaskId">
+                                <div class="row">
+                                    <div class="col-6 text-left">
+                                        <h5>
+                                            @t.Topic
+                                        </h5>
+                                    </div>
+                                    <div class="col-6 text-right">
+                                        <h5 class="mb-0">
+                                            @t.Date.ToString("d")
+                                        </h5>
+                                    </div>
+                                </div>
+                            </a>
+                    </div>
+
+                    <div id="collapse-@t.TaskId" class="collapse" role="tabpanel" aria-labelledby="heading-@t.TaskId" data-parent="#accordion">
+                        <div class="card-body">
+                            <div class="col">
+                                @t.Note
+                            </div>
+                            <div class="col">
+                                <div class="row">
+                                    <div class="col-6 text-left">
+                                        <a class="btn btn-link" href="/Scheduler/Edit?id=@t.TaskId" role="button">Редактировать</a>
+                                    </div>
+                                    <div class="col-6 text-right">
+                                        <a class="btn btn-link" href="/Scheduler/Delete?id=@t.TaskId" role="button">Удалить</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </body>
+</html>

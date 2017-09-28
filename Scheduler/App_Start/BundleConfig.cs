@@ -20,6 +20,7 @@ namespace Scheduler
                         "~/Scripts/modernizr-*"));
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
+                      "~/Scripts/popper.min.js",
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/respond.js"));
 
